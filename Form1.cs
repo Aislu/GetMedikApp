@@ -26,9 +26,6 @@ namespace ParsCatalogForms
             wcl.GetAllDatatoDic();
             LoadPagesForGetInfo();
             WriteCategoryDataToDB();
-            WriteMedikamentDataToDB();
-            webBr.Dispose();
-            Environment.Exit(-1);
         }
 
         /// <summary>
@@ -39,6 +36,10 @@ namespace ParsCatalogForms
         {
             if (wcl.CategoryDataDic.Count > 0 && wcl.PageMedicLinkDic.Count > 0)
             {
+                Console.WriteLine("Reading all data");
+                Console.WriteLine("Started...Waiting time ~3 min.");
+                DateTime a = DateTime.Now;
+
                 foreach (int kp in wcl.CategoryDataDic.Keys)
                 {
                     string strKey = wcl.CategoryDataDic[kp].Kod;
@@ -49,7 +50,7 @@ namespace ParsCatalogForms
                     {
 
                         webBr.Navigate(kvp.Value);
-                        await Task.Delay(700);
+                        await Task.Delay(750);
                         HtmlElement htelement = webBr.Document.GetElementById("ctl00_uxMainContent_uxFilteredCheapestProductListControl_uxProductInfoControl_uxProductInfoPopupPanel");
                         string vv_poz_numurs = htelement.Document.GetElementById("ctl00_uxMainContent_uxFilteredCheapestProductListControl_uxProductInfoControl_uxFaNumberRow").Children[1].InnerText.Trim();
                         string nosaukums = htelement.Document.GetElementById("ctl00_uxMainContent_uxFilteredCheapestProductListControl_uxProductInfoControl_uxNameRow").Children[1].InnerText.Trim();
@@ -80,6 +81,12 @@ namespace ParsCatalogForms
                         }
                     }
                 }
+
+                Console.WriteLine($"Reading is done. Elapsed time {(DateTime.Now - a).TotalMinutes} min.");
+            }
+            if (wcl.MedikamentDataDic.Count > 0)
+            {
+                WriteMedikamentDataToDB();
             }
         }
         /// <summary>
@@ -87,40 +94,48 @@ namespace ParsCatalogForms
         /// </summary>
         private void WriteMedikamentDataToDB()
         {
-            using (var con = new SQLiteConnection(cs))
+            if (wcl.MedikamentDataDic.Count > 0)
             {
-                con.Open();
-                SQLiteCommand cmd = new SQLiteCommand(con);
-                cmd.CommandText = "INSERT or IGNORE INTO MedicData(CategoryID,numurs, nosaukums,kods,cenaBPVN) VALUES (@CategoryID,@numurs, @nosaukums,@kods,@cenaBPVN);";
-                cmd.Parameters.Add("@numurs", DbType.String);
-                cmd.Parameters.Add("@nosaukums", DbType.String);
-                cmd.Parameters.Add("@kods", DbType.String);
-                cmd.Parameters.Add("@CategoryID", DbType.Int32);
-                cmd.Parameters.Add("@cenaBPVN", DbType.Double);
-                cmd.Prepare();
-
-                foreach (string key in wcl.MedikamentDataDic.Keys)
+                using (var con = new SQLiteConnection(cs))
                 {
-                    int CategoryId_ = GetCategoryId(key);
-                    foreach (string keystr in wcl.MedikamentDataDic[key].Keys)
+                    con.Open();
+                    SQLiteCommand cmd = new SQLiteCommand(con);
+                    cmd.CommandText = "INSERT or IGNORE INTO MedicData(CategoryID,numurs, nosaukums,kods,cenaBPVN) VALUES (@CategoryID,@numurs, @nosaukums,@kods,@cenaBPVN);";
+                    cmd.Parameters.Add("@numurs", DbType.String);
+                    cmd.Parameters.Add("@nosaukums", DbType.String);
+                    cmd.Parameters.Add("@kods", DbType.String);
+                    cmd.Parameters.Add("@CategoryID", DbType.Int32);
+                    cmd.Parameters.Add("@cenaBPVN", DbType.Double);
+                    cmd.Prepare();
+
+                    foreach (string key in wcl.MedikamentDataDic.Keys)
                     {
-                        try
+                        int CategoryId_ = GetCategoryId(key);
+                        foreach (string keystr in wcl.MedikamentDataDic[key].Keys)
                         {
-                            cmd.Parameters["@numurs"].Value = keystr;
-                            cmd.Parameters["@nosaukums"].Value = wcl.MedikamentDataDic[key][keystr].nosaukums;
-                            cmd.Parameters["@kods"].Value = wcl.MedikamentDataDic[key][keystr].kods;
-                            cmd.Parameters["@CategoryID"].Value = CategoryId_;
-                            cmd.Parameters["@cenaBPVN"].Value = wcl.MedikamentDataDic[key][keystr].cenaBPVN;
-                            cmd.ExecuteNonQuery();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
+                            try
+                            {
+                                cmd.Parameters["@numurs"].Value = keystr;
+                                cmd.Parameters["@nosaukums"].Value = wcl.MedikamentDataDic[key][keystr].nosaukums;
+                                cmd.Parameters["@kods"].Value = wcl.MedikamentDataDic[key][keystr].kods;
+                                cmd.Parameters["@CategoryID"].Value = CategoryId_;
+                                cmd.Parameters["@cenaBPVN"].Value = wcl.MedikamentDataDic[key][keystr].cenaBPVN;
+                                cmd.ExecuteNonQuery();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(ex.Message);
+                            }
                         }
                     }
                 }
+                Console.WriteLine("Data about Medikaments writed.");
+                webBr.Dispose();
+                Console.WriteLine("Finish");
+                Console.WriteLine("Press any key to exit");
+                Console.ReadKey();
+                Environment.Exit(-1);
             }
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -173,5 +188,6 @@ namespace ParsCatalogForms
                 }
             }
         }
+
     }
 }
