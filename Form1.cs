@@ -6,7 +6,6 @@ using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WpfAppli;
 
 
 namespace ParsCatalogForms
@@ -34,7 +33,7 @@ namespace ParsCatalogForms
 
         /// <summary>
         /// Load each page Catalog (loop), click on each row on page and get info 
-        /// ~ aptvn 2 min 30 sek.
+        /// ~ aptvn 4 min 30 sek.
         /// </summary>
         private async void LoadPagesForGetInfo()
         {
