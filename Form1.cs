@@ -1,10 +1,13 @@
-﻿using System;
+﻿using ParsCatalogForms.Model;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using WpfAppli;
+
 
 namespace ParsCatalogForms
 {
@@ -26,6 +29,7 @@ namespace ParsCatalogForms
             wcl.GetAllDatatoDic();
             LoadPagesForGetInfo();
             WriteCategoryDataToDB();
+
         }
 
         /// <summary>
@@ -37,7 +41,7 @@ namespace ParsCatalogForms
             if (wcl.CategoryDataDic.Count > 0 && wcl.PageMedicLinkDic.Count > 0)
             {
                 Console.WriteLine("Reading all data");
-                Console.WriteLine("Started...Waiting time ~3 min.");
+                Console.WriteLine("Started...Waiting time ~4 min.");
                 DateTime a = DateTime.Now;
 
                 foreach (int kp in wcl.CategoryDataDic.Keys)
@@ -45,12 +49,12 @@ namespace ParsCatalogForms
                     string strKey = wcl.CategoryDataDic[kp].Kod;
                     webBr.Navigate(wcl.CategoryDataDic[kp].LinkTo);
 
-                    await Task.Delay(6000);
+                    await Task.Delay(8000);
                     foreach (KeyValuePair<string, string> kvp in wcl.PageMedicLinkDic[kp])
                     {
 
                         webBr.Navigate(kvp.Value);
-                        await Task.Delay(750);
+                        await Task.Delay(900);
                         HtmlElement htelement = webBr.Document.GetElementById("ctl00_uxMainContent_uxFilteredCheapestProductListControl_uxProductInfoControl_uxProductInfoPopupPanel");
                         string vv_poz_numurs = htelement.Document.GetElementById("ctl00_uxMainContent_uxFilteredCheapestProductListControl_uxProductInfoControl_uxFaNumberRow").Children[1].InnerText.Trim();
                         string nosaukums = htelement.Document.GetElementById("ctl00_uxMainContent_uxFilteredCheapestProductListControl_uxProductInfoControl_uxNameRow").Children[1].InnerText.Trim();
@@ -133,8 +137,26 @@ namespace ParsCatalogForms
                 webBr.Dispose();
                 Console.WriteLine("Finish");
                 Console.WriteLine("Press any key to exit");
-                Console.ReadKey();
-                Environment.Exit(-1);
+
+                FillResultDatagrid();
+            }
+        }
+
+        private void FillResultDatagrid()
+        {
+
+            using (var db = new context())
+            {
+                var list = db.MedicDatas.ToList();
+                if (list.Count > 0)
+                {
+
+                    dataGridView1.DataSource = list;
+                    dataGridView1.Columns[0].Visible = false;
+                    dataGridView1.Columns[1].Visible = false;
+                    dataGridView1.Columns[2].Visible = false;
+                    dataGridView1.Columns[4].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+                }
             }
         }
 
@@ -188,6 +210,7 @@ namespace ParsCatalogForms
                 }
             }
         }
+
 
     }
 }

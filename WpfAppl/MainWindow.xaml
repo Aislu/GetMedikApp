@@ -1,0 +1,23 @@
+﻿<Window x:Class="WpfAppli.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfAppli"
+        mc:Ignorable="d"
+        Title="Medikamenti" Height="682" Width="800" HorizontalAlignment="Center" Background="AliceBlue" FontSize="12" BorderBrush="Azure">
+    <Grid Margin="0,0,0,14">
+        <DataGrid x:Name="dgCategory" Margin="30,27,0,0" ItemsSource="{Binding}" Height="157" VerticalAlignment="Top" HorizontalAlignment="Left" Width="450" >
+            <DataGrid.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform AngleX="0.44"/>
+                    <RotateTransform/>
+                    <TranslateTransform X="0.461"/>
+                </TransformGroup>
+            </DataGrid.RenderTransform>
+        </DataGrid>
+        <DataGrid x:Name="dgMedic" Margin="0,197,0,40" ItemsSource="{Binding}" HorizontalAlignment="Center" Width="740"/>
+
+    </Grid>
+</Window>
