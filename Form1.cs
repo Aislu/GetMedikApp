@@ -16,7 +16,7 @@ namespace ParsCatalogForms
         /// <summary>
         /// need to  change
         /// </summary>
-        private static string cs = @"URI=file:C:\sqllite\MedicDB.db";
+        private static string dbPath = @"URI=file:C:\sqllite\MedicDB.db";
 
         public Form1()
         {
@@ -99,7 +99,7 @@ namespace ParsCatalogForms
         {
             if (wcl.MedikamentDataDic.Count > 0)
             {
-                using (var con = new SQLiteConnection(cs))
+                using (var con = new SQLiteConnection(dbPath))
                 {
                     con.Open();
                     SQLiteCommand cmd = new SQLiteCommand(con);
@@ -166,7 +166,7 @@ namespace ParsCatalogForms
         {
             if (wcl.CategoryDataDic.Count > 0)
             {
-                using (var con = new SQLiteConnection(cs))
+                using (var con = new SQLiteConnection(dbPath))
                 {
                     con.Open();
                     SQLiteCommand cmd = new SQLiteCommand(con);
@@ -190,7 +190,7 @@ namespace ParsCatalogForms
         /// <returns></returns>
         private int GetCategoryId(string key)
         {
-            using (var con = new SQLiteConnection(cs))
+            using (var con = new SQLiteConnection(dbPath))
             {
                 try
                 {
